@@ -1,6 +1,10 @@
 SUBDIRS=bfc bwa fermi2 htsbox ropebwt2 seqtk trimadap
+
 all:fermi.kit/htsbox fermi.kit/ropebwt2 fermi.kit/bfc fermi.kit/bwa fermi.kit/seqtk fermi.kit/trimadap-mt \
 	fermi.kit/fermi2 fermi.kit/fermi2.pl fermi.kit/fermi2.js fermi.kit/k8
+
+fermi.kit:
+	mkdir -p fermi.kit
 
 all-recur clean-recur:
 	@target=`echo $@ | sed s/-recur//`; \
