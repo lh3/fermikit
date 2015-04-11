@@ -1,0 +1,21 @@
+[submodule "fermi2"]
+	path = fermi2
+	url = https://github.com/lh3/fermi2.git
+[submodule "seqtk"]
+	path = seqtk
+	url = https://github.com/lh3/seqtk.git
+[submodule "htsbox"]
+	path = htsbox
+	url = https://github.com/lh3/htsbox
+[submodule "bwa"]
+	path = bwa
+	url = https://github.com/lh3/bwa
+[submodule "trimadap"]
+	path = trimadap
+	url = https://github.com/lh3/trimadap
+[submodule "ropebwt2"]
+	path = ropebwt2
+	url = https://github.com/lh3/ropebwt2
+[submodule "bfc"]
+	path = bfc
+	url = https://github.com/lh3/bfc
