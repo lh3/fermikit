@@ -1,126 +1,47 @@
-all:fermi.kit fermi.kit/htsbox fermi.kit/ropebwt2 fermi.kit/bfc fermi.kit/bwa fermi.kit/seqtk fermi.kit/trimadap-mt \
-	fermi.kit/k8 fermi.kit/fermi2 fermi.kit/fermi2.pl fermi.kit/fermi2.js
+SUBDIRS=bfc bwa fermi2 htsbox ropebwt2 seqtk trimadap
+all:fermi.kit/htsbox fermi.kit/ropebwt2 fermi.kit/bfc fermi.kit/bwa fermi.kit/seqtk fermi.kit/trimadap-mt \
+	fermi.kit/fermi2 fermi.kit/fermi2.pl fermi.kit/fermi2.js fermi.kit/k8
 
-fermi.kit:
-	mkdir $@
+all-recur clean-recur:
+	@target=`echo $@ | sed s/-recur//`; \
+	wdir=`pwd`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+		cd $$subdir; \
+		$(MAKE) $$target || exit 1; \
+		cd $$wdir; \
+	done;
 
-##############
-### htsbox ###
-##############
+prepare:all-recur fermi.kit
 
-htsbox:
-	git clone https://github.com/lh3/htsbox.git
+fermi.kit/bfc:prepare
+	cp bfc/bfc $@; strip $@
 
-htsbox/htsbox:htsbox
-	(cd $<; make)
+fermi.kit/bwa:prepare
+	cp bwa/bwa $@; strip $@
 
-fermi.kit/htsbox:htsbox/htsbox fermi.kit
-	cp $< $@; strip $@
+fermi.kit/fermi2:prepare
+	cp fermi2/fermi2 $@; strip $@
 
-################
-### ropebwt2 ###
-################
+fermi.kit/htsbox:prepare
+	cp htsbox/htsbox $@; strip $@
 
-ropebwt2:
-	git clone https://github.com/lh3/ropebwt2.git
+fermi.kit/ropebwt2:prepare
+	cp ropebwt2/ropebwt2 $@; strip $@
 
-ropebwt2/ropebwt2:ropebwt2
-	(cd $<; make)
+fermi.kit/seqtk:prepare
+	cp seqtk/seqtk $@; strip $@
 
-fermi.kit/ropebwt2:ropebwt2/ropebwt2 fermi.kit
-	cp $< $@; strip $@
+fermi.kit/trimadap-mt:prepare
+	cp trimadap/trimadap-mt $@; strip $@
 
-###########
-### bfc ###
-###########
+fermi.kit/fermi2.pl:fermi.kit
+	cp fermi2/fermi2.pl $@
 
-bfc:
-	git clone https://github.com/lh3/bfc.git
-
-bfc/bfc:bfc
-	(cd $<; make)
-
-fermi.kit/bfc:bfc/bfc fermi.kit
-	cp $< $@; strip $@
-
-###########
-### bwa ###
-###########
-
-bwa:
-	git clone https://github.com/lh3/bwa.git
-
-bwa/bwa:bwa
-	(cd $<; make)
-
-fermi.kit/bwa:bwa/bwa fermi.kit
-	cp $< $@; strip $@
-
-#############
-### seqtk ###
-#############
-
-seqtk:
-	git clone https://github.com/lh3/seqtk.git
-
-seqtk/seqtk:seqtk
-	(cd $<; make)
-
-fermi.kit/seqtk:seqtk/seqtk fermi.kit
-	cp $< $@; strip $@
-
-################
-### trimadap ###
-################
-
-trimadap:
-	git clone https://github.com/lh3/trimadap.git
-
-trimadap/trimadap-mt:trimadap
-	(cd $<; make)
-
-fermi.kit/trimadap-mt:trimadap/trimadap-mt fermi.kit
-	cp $< $@; strip $@
-
-##############
-### fermi2 ###
-##############
-
-fermi2:
-	git clone https://github.com/lh3/fermi2.git
-
-fermi2/fermi2:fermi2
-	(cd $<; make)
-
-fermi.kit/fermi2:fermi2/fermi2 fermi.kit
-	cp $< $@; strip $@
-
-fermi.kit/fermi2.js fermi.kit/fermi2.pl:fermi2 fermi.kit
-	cp fermi2/fermi2.js fermi2/fermi2.pl fermi.kit
-
-##########
-### k8 ###
-##########
-
-k8-0.2.1.tar.bz2:
-	wget -O $@ http://sourceforge.net/projects/biobin/files/devtools/k8-0.2.1.tar.bz2/download
+fermi.kit/fermi2.js:fermi.kit
+	cp fermi2/fermi2.js $@
 
 fermi.kit/k8:k8-0.2.1.tar.bz2 fermi.kit
 	(cd fermi.kit; tar -jxf ../$< k8-`uname -s|tr [A-Z] [a-z]`; mv k8-`uname -s|tr [A-Z] [a-z]` k8)
 
-#############
-### clean ###
-#############
-
-clean:
-	rm -fr fermi.kit; \
-	[ -d htsbox ] && (cd htsbox; make clean; rm -fr .git); \
-	[ -d ropebwt2 ] && (cd ropebwt2; make clean; rm -fr .git); \
-	[ -d bfc ] && (cd bfc; make clean; rm -fr .git); \
-	[ -d bwa ] && (cd bwa; make clean; rm -fr .git); \
-	[ -d fermi2 ] && (cd fermi2; make clean; rm -fr .git); \
-	[ -d seqtk ] && (cd seqtk; make clean; rm -fr .git); \
-	[ -d trimadap ] && (cd trimadap; make clean; rm -fr .git);
-
-distclean:clean
-	rm -fr htsbox ropebwt2 bfc bwa fermi2 seqtk trimadap k8-0.2.1.tar.bz2
+clean:clean-recur
+	rm -fr fermi.kit
