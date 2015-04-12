@@ -45,7 +45,7 @@ fermi.kit/fermi2.js:fermi.kit
 	cp fermi2/fermi2.js $@
 
 fermi.kit/k8:k8-0.2.1.tar.bz2 fermi.kit
-	(cd fermi.kit; tar -jxf ../$< k8-`uname -s|tr [A-Z] [a-z]`; mv k8-`uname -s|tr [A-Z] [a-z]` k8)
+	(cd fermi.kit; tar -jxf ../$< k8-`uname -s|tr [A-Z] [a-z]` && mv k8-`uname -s|tr [A-Z] [a-z]` k8)
 
 clean:clean-recur
 	rm -fr fermi.kit
