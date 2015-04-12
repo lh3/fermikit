@@ -39,6 +39,11 @@ fermi.kit/htsbox pileup -cuf ref.fa prefix.bam > prefix.vcf
 # calling structural variations
 fermi.kit/htsbox abreak -u prefix.sam.gz > prefix.txt
 ```
+If you have multiple FASTQ files and want to trim adapters before assembly:
+```sh
+fermi.kit/fermi2.pl unitig -s3g -t16 -l150 -p prefix \
+    "fermi.kit/seqtk mergepe read1.fq read2.fq | fermi.kit/trimadap-mt -p4" > prefix.mak
+```
 For small variant calling, we may also call multiple BAMs at the same time to
 produce a multi-sample VCF.
 
