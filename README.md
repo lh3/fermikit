@@ -6,15 +6,15 @@ reference genome and then calls variants from the alignment to an accuracy
 comparable to conventional mapping based pipelines. The unitigs produced from
 the assembly not only encode SNPs and short INDELs, but also retain long
 deletions, novel sequence insertions and translocations. In theory, we may use
-the unitigs for most downstream analyses without much loss in information. In
+the unitigs for most downstream analyses without much loss of information. In
 this sense, unitigs are lossy compression of raw reads.
 
 FermiKit is not a prototype. It is a practical pipeline targeting large-scale
 data and has been used to process hundreds of human samples. On a modern server
 with 16 CPU cores, FermiKit can assemble 30-fold human reads in one day with
-about 80GB RAM. The subsequent mapping and variant calling only take 20
-minutes. The performance is compared favorably to the mainstream variant
-calling pipelines we are using today.
+about 80GB RAM at the peak. The subsequent mapping and variant calling only
+take 20 minutes. The performance is compared favorably to the mainstream
+variant calling pipelines we are using today.
 
 ## Installation and Usage
 
