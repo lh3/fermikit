@@ -18,7 +18,7 @@ variant calling pipelines we are using today.
 
 ## Installation and Usage
 
-To compile:
+To compile (on Linux and Mac only):
 ```sh
 git clone --recursive https://github.com/lh3/fermikit.git
 cd fermikit
