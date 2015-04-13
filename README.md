@@ -42,8 +42,11 @@ adapters before assembly:
 fermi.kit/fermi2.pl unitig -s3g -t16 -l150 -p prefix \
     "fermi.kit/seqtk mergepe read1.fq read2.fq | fermi.kit/trimadap-mt -p4" > prefix.mak
 ```
-For small variant calling, we may also call multiple BAMs at the same time to
-produce a multi-sample VCF.
+It is also possible to call small variants from multiple BAMs at the same time
+and produce a multi-sample VCF:
+```sh
+fermi.kit/htsbox pileup -cuf ref.fa pre1.srt.bam pre2.srt.bam > out.vcf
+```
 
 ## Limitations
 
