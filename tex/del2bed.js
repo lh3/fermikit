@@ -51,7 +51,7 @@ while (file.readline(buf) >= 0) {
 	if (t.length >= 6 && /\tTYPE:DELETION/.test(line) && (m = /\tMAX:([^:\s]+):(\d+);([^:\s]+):(\d+)/.exec(line)) != null) { // bedpe produced by LUMPY
 		if (m[1] == m[3]) print(m[1], parseInt(m[2])-1, m[4], t[t.length-1]);
 		else warn("WARNING: different contig names");
-	} else if (line.charAt(0) != '#' && t.length > 8 && /^\d+$/.test(t[1]) && (m = /[;\t]END=(\d+)/.exec(t[7])) != null) { // VCF
+	} else if (line.charAt(0) != '#' && t.length >= 8 && /^\d+$/.test(t[1]) && (m = /\t?END=(\d+)/.exec(t[7])) != null) { // VCF
 		if (t.length >= 10 && /^0[\/|]0/.test(t[9])) continue; // 0/0 genotype
 		if (/SVTYPE=DEL/.test(t[7]) || /<DEL>/.test(t[4])) {
 			if (show_filtered || t[6] == 'PASS' || t[6] == '.')
