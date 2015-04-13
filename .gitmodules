@@ -19,3 +19,6 @@
 [submodule "bfc"]
 	path = bfc
 	url = https://github.com/lh3/bfc
+[submodule "hapdip"]
+	path = hapdip
+	url = https://github.com/lh3/hapdip
