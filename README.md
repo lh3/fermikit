@@ -31,10 +31,13 @@ absolute or relative path:
 # assembly reads into unitigs (-s specifies the genome size and -l the read length)
 fermi.kit/fermi2.pl unitig -s3g -t16 -l150 -p prefix reads.fq.gz > prefix.mak
 make -f prefix.mak
-# call small variants, long deletions and novel sequence insertions
+# call small variants and structural variations
 fermi.kit/run-calling bwa-indexed-ref.fa prefix.mag.gz | sh
 ```
-If you have multiple FASTQ files and want to trim adapters before assembly:
+This generates `prefix.flt.vcf.gz` for filtered SNPs and short INDELs and
+`prefix.sv.vcf.gz` for long deletions, novel sequence insertions and complex
+structural variations. If you have multiple FASTQ files and want to trim
+adapters before assembly:
 ```sh
 fermi.kit/fermi2.pl unitig -s3g -t16 -l150 -p prefix \
     "fermi.kit/seqtk mergepe read1.fq read2.fq | fermi.kit/trimadap-mt -p4" > prefix.mak
