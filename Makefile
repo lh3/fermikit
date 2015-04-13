@@ -1,7 +1,7 @@
 SUBDIRS=bfc bwa fermi2 htsbox ropebwt2 seqtk trimadap
 
 all:fermi.kit/htsbox fermi.kit/ropebwt2 fermi.kit/bfc fermi.kit/bwa fermi.kit/seqtk fermi.kit/trimadap-mt \
-	fermi.kit/fermi2 fermi.kit/fermi2.pl fermi.kit/fermi2.js fermi.kit/k8 fermi.kit/hapdip.js
+	fermi.kit/fermi2 fermi.kit/fermi2.pl fermi.kit/fermi2.js fermi.kit/k8 fermi.kit/hapdip.js fermi.kit/run-calling
 
 fermi.kit:
 	mkdir -p fermi.kit
@@ -46,6 +46,9 @@ fermi.kit/fermi2.js:fermi.kit
 
 fermi.kit/hapdip.js:fermi.kit
 	cp hapdip/hapdip.js $@
+
+fermi.kit/run-calling:run-calling
+	cp run-calling $@
 
 fermi.kit/k8:k8-0.2.1.tar.bz2 fermi.kit
 	(cd fermi.kit; tar -jxf ../$< k8-`uname -s|tr [A-Z] [a-z]` && mv k8-`uname -s|tr [A-Z] [a-z]` k8)

@@ -31,13 +31,8 @@ absolute or relative path:
 # assembly reads into unitigs (-s specifies the genome size and -l the read length)
 fermi.kit/fermi2.pl unitig -s3g -t16 -l150 -p prefix reads.fq.gz > prefix.mak
 make -f prefix.mak
-# mapping (-x intractg triggers setting for intra-species unitig mapping)
-fermi.kit/bwa mem -t16 -x intractg ref.fa prefix.mag.gz | gzip -1 > prefix.sam.gz
-samtools view -uS prefix.sam.gz | samtools sort -m20G - prefix
-# calling small variants
-fermi.kit/htsbox pileup -cuf ref.fa prefix.bam > prefix.vcf
-# calling structural variations
-fermi.kit/htsbox abreak -u prefix.sam.gz > prefix.txt
+# call small variants, long deletions and novel sequence insertions
+fermi.kit/run-calling bwa-indexed-ref.fa prefix.mag.gz | sh
 ```
 If you have multiple FASTQ files and want to trim adapters before assembly:
 ```sh

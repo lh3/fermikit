@@ -1,0 +1,61 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use Getopt::Std;
+
+my %opts = (t=>4);
+getopts("t:b:o:", \%opts);
+
+die('Usage: run-calling [options] <indexed-ref> <unitigs.mag.gz>
+Options:
+  -o STR    prefix of output files [inferred from input]
+  -b STR    prefix for BWA index [same as <indexed-ref>]
+  -t INT    number of threads [4]
+') if @ARGV < 2;
+
+# check path
+my $exepath = $0 =~/^\S+\/[^\/\s]+/? $0 : &which($0);
+my $root = $0 =~/^(\S+)\/[^\/\s]+/? $1 : undef;
+$root = $exepath =~/^(\S+)\/[^\/\s]+/? $1 : undef if !defined($root);
+die "ERROR: failed to locate the 'fermi.kit' directory\n" if !defined($root);
+
+# check samtools
+die("ERROR: can't find samtools executable\n") unless &which("samtools");
+
+# check BWA index
+my $idx = defined($opts{b})? $opts{b} : $ARGV[0];
+die("ERROR: failed to locate the BWA index. Please run '$root/bwa index -p $idx ref.fa'.\n")
+  unless (-f "$idx.bwt" && -f "$idx.pac" && -f "$idx.sa" && -f "$idx.ann" && -f "$idx.amb");
+
+# infer prefix
+my $prefix;
+if (defined $opts{o}) {
+	$prefix = $opts{o};
+} elsif ($ARGV[1] =~ /\.mag(\.gz?)$/) {
+	$prefix = $ARGV[1];
+	$prefix = s/\.mag(\.gz?)$//;
+}
+die("ERROR: failed to identify the prefix for output. Please specify -o.\n") unless defined($prefix);
+
+# construct command lines
+my $cmd = '';
+$cmd .= "[ ! -f $prefix.unsrt.sam.gz ] && $root/bwa mem -t$opts{t} -x intractg $ARGV[0] $ARGV[1] | gzip -1 > $prefix.unsrt.sam.gz;\n";
+$cmd .= "[ ! -f $prefix.srt.bam ] && $root/htsbox samview -Sl0 $prefix.unsrt.sam.gz | samtools sort -m20G - $prefix.srt;\n";
+$cmd .= "$root/htsbox pileup -cuf $ARGV[0] $prefix.srt.bam | gzip -1 > $prefix.raw.vcf.gz;\n";
+$cmd .= "$root/k8 $root/hapdip.js deovlp $prefix.raw.vcf.gz | $root/k8 $root/hapdip.js anno | gzip -1 > $prefix.tmp.vcf.gz;\n";
+$cmd .= "$root/k8 $root/hapdip.js filter -q3 $prefix.tmp.vcf.gz | gzip -1 > $prefix.flt.vcf.gz; rm -f $prefix.tmp.vcf.gz;\n";
+$cmd .= "$root/htsbox abreak -cu $prefix.unsrt.sam.gz | gzip -1 > $prefix.sv.vcf.gz;\n";
+print $cmd;
+
+sub which
+{
+	my $file = shift;
+	my $path = (@_)? shift : $ENV{PATH};
+	return if (!defined($path));
+	foreach my $x (split(":", $path)) {
+		$x =~ s/\/$//;
+		return "$x/$file" if (-x "$x/$file");
+	}
+	return;
+}
