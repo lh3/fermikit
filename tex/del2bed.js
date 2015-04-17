@@ -36,10 +36,11 @@ var getopt = function(args, ostr) {
 	return optopt;
 }
 
-var c, show_filtered = false;
+var c, show_filtered = false, min_len = 0;
 
-while ((c = getopt(arguments, "f")) != null) {
+while ((c = getopt(arguments, "fl:")) != null) {
 	if (c == 'f') show_filtered = true;
+	else if (c == 'l') min_len = parseInt(getopt.arg);
 }
 
 var file = arguments.length == getopt.ind? new File() : new File(arguments[getopt.ind]);
@@ -51,11 +52,21 @@ while (file.readline(buf) >= 0) {
 	if (t.length >= 6 && /\tTYPE:DELETION/.test(line) && (m = /\tMAX:([^:\s]+):(\d+);([^:\s]+):(\d+)/.exec(line)) != null) { // bedpe produced by LUMPY
 		if (m[1] == m[3]) print(m[1], parseInt(m[2])-1, m[4], t[t.length-1]);
 		else warn("WARNING: different contig names");
-	} else if (line.charAt(0) != '#' && t.length >= 8 && /^\d+$/.test(t[1]) && (m = /\t?END=(\d+)/.exec(t[7])) != null) { // VCF
+	} else if (/^\d+$/.test(t[1]) && /^\d+$/.test(t[2]) && /^\d+$/.test(t[4]) && /^\d+$/.test(t[5]) && t[0] == t[3]) {
+		var start = parseInt(t[1]) < parseInt(t[4])? t[1] : t[4];
+		var end   = parseInt(t[2]) > parseInt(t[5])? t[2] : t[5];
+		print(t[0], start, end);
+	} else if (line.charAt(0) != '#' && t.length >= 8 && /^\d+$/.test(t[1]) && (m = /\bEND=(\d+)/.exec(t[7])) != null) { // VCF
 		if (t.length >= 10 && /^0[\/|]0/.test(t[9])) continue; // 0/0 genotype
-		if (/SVTYPE=DEL/.test(t[7]) || /<DEL>/.test(t[4])) {
+		var end = m[1];
+		if (/\bSVTYPE=DEL/.test(t[7]) || /<DEL>/.test(t[4])) {
+			if (min_len > 0 && (m = /\bSVLEN=(-?\d+)/.exec(t[7])) != null) {
+				var l = parseInt(m[1]);
+				if (l < 0) l = -l;
+				if (l < min_len) continue;
+			}
 			if (show_filtered || t[6] == 'PASS' || t[6] == '.')
-				print(t[0], parseInt(t[1])-1, m[1], t[6]);
+				print(t[0], parseInt(t[1])-1, end, t[6]);
 		}
 	} else if (t.length >= 6 && t[0] == 'D' && /^\d+/.test(t[2]) && /^\d+/.test(t[3])) { // htsbox abreak
 		for (var i = 2; i <= 5; ++i) t[i] = parseInt(t[i]); 
