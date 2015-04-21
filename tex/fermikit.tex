@@ -1,0 +1,183 @@
+\documentclass{bioinfo}
+\copyrightyear{2015}
+\pubyear{2015}
+
+\usepackage{amsmath}
+\usepackage{natbib}
+
+\bibliographystyle{apalike}
+
+
+\begin{document}
+\firstpage{1}
+
+\title[FermiKit: assembly based variant calling]{FermiKit: assembly-based variant calling for Illumina resequencing data}
+
+\author[Li]{Heng Li}
+
+\address{Broad Institute, 75 Ames Street, Cambridge, MA 02142, USA}
+
+\history{Received on XXXXX; revised on XXXXX; accepted on XXXXX}
+\editor{Associate Editor: XXXXXXX}
+\maketitle
+
+\begin{abstract}
+\section{Summary:}
+FermiKit is a variant calling pipeline for Illumina data. Unlike mapping based
+pipelines, it starts from {\it de novo} assembly of short reads and then
+maps the assembled unitigs to a reference genome to call SNPs, short
+insertions/deletions (INDELs) and structural variations (SVs). FermiKit
+typically takes about one day to assemble 30-fold human whole-genome data on a
+16-core server with 85GB RAM at the peak, and calls variants in half an hour to
+an accuracy comparable to the current practice.
+
+\section{Availability and implementation:} https://github.com/lh3/fermikit
+
+\section{Contact:} hengli@broadinstitute.org
+\end{abstract}
+
+\section{Introduction}
+
+\begin{methods}
+\section{Methods}
+The FermiKit pipeline uses BFC~\citep{Li:2015aa-tmp} for error correction,
+ropeBWT2~\citep{Li:2014ab} for BWT construction, an improved version of
+fermi~\citep{Li:2012fk} for {\it de novo} assembly, BWA-MEM~\citep{Li:2013aa}
+for mapping and HTSBox (http://bit.ly/HTSBox) for variant calling. The
+assembler retains the number of supporting reads at each position on the
+contigs. The HTSBox caller simply parses edits in the `pileup' output for small
+variant calling and extracts alignment break points for SV calling. It sets
+thresholds on mapping quality and the number of supporting reads without
+using sophisticated statistical modeling. FermiKit does not use paired-end
+information for the time being.
+
+\end{methods}
+
+\section{Results}
+We have run FermiKit on multiple NA12878 whole-genome data sets along with
+GATK-HaplotypeCaller (HC in brief) and FreeBayes~\citep{Garrison:2012aa}.
+We used Genome-In-A-Bottle (GIAB; \citealt{Zook:2014ab}) as truth data
+to evaluate the accuracy (Table~1). Recent Illumia data have excessive
+systematic errors around poly-A which HC does not handle well. It called over
+4000 false INDELs from sample S1+ and S4+ with the vast majority around poly-A.
+We excluded these regions to avoid one simple error source greatly affecting
+the metrics. After this treatment, variant callers are broadly comparable when
+the same set of hard filters are applied. VQSR as is adviced in GATK Best
+Practice does not work well with single-sample calling.
+
+\begin{table}[htb]
+\processtable{GIAB evaluation on SNP/INDEL accuracy}
+{\footnotesize
+\begin{tabular}{lp{1.7cm}rrrr}
+\toprule
+Sample & Caller     & SNP-FN & SNP-FP & InDel-FN & InDel-FP \\
+\midrule
+PG- & FermiKit      & 45,700 & 824    & 2,324    & 472 \\
+	& FreeBayes     & 21,601 & 440    & 3,856    & 616 \\
+    & HC+hardFilter & 27,010 & 144    & 943      & 370 \\
+	& HC+VQSR       & 128,604& 1,955  & 1,423    & 366 \\
+S7- & FermiKit      & 65,217 & 531    & 2,340    & 549 \\
+	& FreeBayes     & 50,866 & 675    & 2,895    & 670 \\
+    & HC+hardFilter & 66,847 & 228    & 1,543    & 457 \\
+	& HC+VQSR       & 103,979& 1,508  & 1,396    & 605 \\
+S11-& FermiKit      & 91,468 & 541    & 2,973    & 554 \\
+	& FreeBayes     & 52,120 & 904    & 3,200    & 672 \\
+	& HC+hardFilter & 65,223 & 407    & 1,502    & 472 \\
+	& HC+VQSR       & 111,504& 1,694  & 1,175    & 765 \\
+S2- & FermiKit      & 63,445 & 448    & 2,244    & 568 \\
+S12-& FermiKit      & 74,940 & 501    & 2,562    & 553 \\
+S1+ & FermiKit      & 67,816 & 455    & 4,051    & 516 \\
+	& FreeBayes     & 63,147 & 902    & 4,626    & 660 \\
+    & HC+hardFilter & 71,174 & 531    & 2,376    & 591 \\
+	& HC+VQSR       & 108,101& 8,852  & 2,377    & 1,827 \\
+S4+ & FermiKit      & 71,262 & 452    & 4,197    & 536 \\
+	& FreeBayes     & 65,476 & 1,057  & 4,782    & 661 \\
+	& HC+hardFilter & 75,040 & 672    & 2,477    & 653 \\
+	& HC+VQSR       & 103,595& 10,492 & 2,401    & 1,622 \\
+\botrule
+\end{tabular}}{PCR-free Platinum Genome NA12878 (PG-), four Illumina X10 lanes
+of PCR-free NA12878 (S7-, S11-, S2- and S12- under BaseSpace project ID
+18475457) and two X10 lanes of PCR-amplified NA12878 (S1+ and S4+ under project
+ID 8998991) were acquired and called with FermiKit-0.9, FreeBayes-0.9.20
+(option: `--experimental-gls --min-repeat-entropy
+1') and HC-3.3 (option: `-stand\_emit\_conf 10 -stand\_call\_conf 30'). For
+FreeBayes and HC, BWA-MEM was used for mapping with PCR duplicates marked by
+Samblaster~\citep{Faust:2014aa}.  Short variant calls were hard filtered with
+hapdip (http://bit.ly/HapDip). GATK-VQSR was also applied
+to HC calls. The filtered calls were compared to
+GIAB-v2.18 excluding poly-A regions longer than 7bp plus 10bp flanking. A
+true variant is counted as an FN if there are no called variants within 10bp
+around the turth, and a called variant is counted as an FP if it falls in GIAB
+trusted regions and there are no true variants within 10bp around the called
+variant.}
+\end{table}
+
+GIAB was generated from multiple NA12878 call sets. It is potentially biased
+against new callers and biased towards easier regions that can be called by the
+existing callers. For example, the GATK call set available from the Platinum
+Genome website has 13,278 FN SNPs and 46 FPs out of 2.03Gb confident regions
+(i.e. one SNP error per 44Mbp), which is overly good.
+
+We turned to the CHM1-NA12878 dataset~\citep{Li:2014aa} for an unbiased
+evaluation (Table~2). In this evaluation, FermiKit produces calls of higher
+specificity but lower sensitivity, though in well-behaved regions that are
+outside `uniMask', the loss in sensitivity is minor.
+
+\begin{table}[htb]
+\processtable{Evaluation on SNP/INDEL accuracy with CHM1-NA12878 pair}
+{\footnotesize
+\begin{tabular}{llrrrr}
+\toprule
+Caller   & Filter     & SNP-TP    & SNP-FP & InDel-TP & InDel-FP \\
+\midrule
+FermiKit & hard-polyA & 1,937,469 & 22,743 & 230,955 & 14,602 \\
+         & uniMask    & 1,802,820 & 9,507  & 127,304 & 1,126 \\
+FreeBayes& hard-polyA & 2,026,883 & 59,422 & 190,587 & 30,909 \\
+         & uniMask    & 1,842,634 & 15,252 & 117,764 & 6,329 \\
+HC       & hard-polyA & 2,003,655 & 32,030 & 267,870 & 15,541 \\
+         & uniMask    & 1,824,658 & 14,912 & 133,458 & 2,046 \\
+\botrule
+\end{tabular}}{SNP/INDELs were called from the CHM1 and NA12878 BWA-MEM
+alignments used by~\citet{Li:2014aa}. On the assumption that CHM1 is haploid,
+FP equals the number of CHM1 heterozygotes and TP equals the number of NA12878
+heterozygotes minus the number of CHM1 heterozygotes. Two sets of filters were
+applied for filtering. `Hard-polyA' is the same as the filter used in Table~1.
+`UniMask' filters out genomic regions that tend to be repetitive,
+low-complexity or susceptible to copy number changes (http://bit.ly/unimask).
+This filter is independent of sequencing data.}
+\end{table}
+
+We evaluated the FermiKit SV calls by comparing them to the validated NA12878
+SVs~\citep{Layer:2014aa}.
+
+\begin{table}[htb]
+\processtable{Performance on calling long deletions}
+{\footnotesize
+\begin{tabular}{llcccc}
+\toprule
+Sample& Caller  & {1000g pilot} & {Ensemble} & {LUMPY} & {Merged}\\
+\midrule
+S7- & FermiKit  & 0.43 / 0.23 & 0.50 / 0.15 & 0.32 / 0.23 & 0.58 / 0.09 \\
+S1+ & FermiKit  & 0.43 / 0.22 & 0.51 / 0.15 & 0.33 / 0.23 & 0.58 / 0.10 \\
+PG- & FermiKit  & 0.43 / 0.20 & 0.52 / 0.14 & 0.34 / 0.22 & 0.59 / 0.09\\
+    & DELLY     & 0.47 / 0.34 & 0.50 / 0.22 & 0.31 / 0.28 & 0.58 / 0.16\\
+    & LUMPY     & 0.72 / 0.34 & 0.76 / 0.29 & 0.68 / 0.37 & 0.79 / 0.20\\
+\botrule
+\end{tabular}}{FermiKit was used to call 100bp or longer deletions from the
+PG-, S7- and S1+ datasets.  DELLY and LUMPY PG- calls were acquired from
+http://bit.ly/bcbsval (B. Chapman, personal communication). The two numbers in
+a cell at row $R$ and column $C$ give the false negative rate and false
+positive rate of call set $R$, assuming truth set $C$ is correct and complete.
+In the table, truth set `1000g pilot' consists of deletions by
+\citet{Mills:2011aa} and further validated by~\citet{Layer:2014aa};
+`Ensemble' contains validated calls by multiple callers; `LUMPY'
+consists of validated LUMPY-only deletions; `Merged' is the union of all the
+three truth sets above.}
+
+\end{table}
+
+\section*{Acknowledgement}
+\paragraph{Funding\textcolon} NHGRI U54HG003037; NIH GM100233
+
+\bibliography{fermikit}
+\end{document}

@@ -36,11 +36,12 @@ var getopt = function(args, ostr) {
 	return optopt;
 }
 
-var c, show_filtered = false, min_len = 0;
+var c, show_filtered = false, min_len = 100, max_len = 100000;
 
-while ((c = getopt(arguments, "fl:")) != null) {
+while ((c = getopt(arguments, "fl:L:")) != null) {
 	if (c == 'f') show_filtered = true;
 	else if (c == 'l') min_len = parseInt(getopt.arg);
+	else if (c == 'L') max_len = parseInt(getopt.arg);
 }
 
 var file = arguments.length == getopt.ind? new File() : new File(arguments[getopt.ind]);
@@ -63,7 +64,7 @@ while (file.readline(buf) >= 0) {
 			if (min_len > 0 && (m = /\bSVLEN=(-?\d+)/.exec(t[7])) != null) {
 				var l = parseInt(m[1]);
 				if (l < 0) l = -l;
-				if (l < min_len) continue;
+				if (l < min_len || l > max_len) continue;
 			}
 			if (show_filtered || t[6] == 'PASS' || t[6] == '.')
 				print(t[0], parseInt(t[1])-1, end, t[6]);
