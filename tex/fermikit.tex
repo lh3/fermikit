@@ -27,7 +27,7 @@ FermiKit is a variant calling pipeline for Illumina data. It {\it de novo}
 assembles short reads and then maps the assembly against a reference genome to
 call SNPs, short insertions/deletions (INDELs) and structural variations (SVs).
 FermiKit takes about one day to assemble 30-fold human whole-genome data on a
-16-core server with 85GB RAM at the peak, and calls variants in half an hour to
+modern 16-core server with 85GB RAM at the peak, and calls variants in half an hour to
 an accuracy comparable to the current practice. FermiKit assembly is a reduced
 representation of raw data while retaining most of the original information.
 
@@ -60,7 +60,7 @@ assembler retains the number of supporting reads at each position on the
 contigs. The HTSBox caller simply parses edits in the `pileup' output for small
 variant calling from one or multiple BAMs and extracts alignment break points
 for SV calling. It sets thresholds on mapping quality and the number of
-supporting reads without using sophisticated statistical modeling. FermiKit
+supporting reads without using sophisticated statistical models. FermiKit
 does not use paired-end information for the time being, but this does not have
 a great impact on its power (see Results). With longer upcoming Illumina reads,
 it will be actually preferred to merge overlapping ends and treat them as
@@ -109,7 +109,7 @@ Samblaster~\citep{Faust:2014aa}.  Short variant calls were hard filtered with
 hapdip (http://bit.ly/HapDip). GATK-VQSR was also applied to HC calls. The
 filtered calls were compared to GIAB-v2.18 excluding poly-A regions longer than
 7bp plus 10bp flanking. A true variant is counted as an FN if there are no
-called variants within 10bp around the turth, and a called variant is counted
+called variants within 10bp around the truth, and a called variant is counted
 as an FP if it falls in GIAB trusted regions and there are no true variants
 within 10bp around the called variant.}
 \end{table}
@@ -123,7 +123,7 @@ systematic errors around poly-A which HC does not handle well. It called over
 4000 false INDELs from sample S1+ and S4+ with the vast majority around poly-A.
 We excluded these regions to avoid one simple error source greatly affecting
 the metrics. After this treatment, variant callers are broadly comparable when
-the same set of hard filters are applied. VQSR as is adviced in GATK Best
+the same set of hard filters are applied. VQSR as is advised in GATK Best
 Practice does not work well with single-sample calling.
 
 GIAB was generated from multiple NA12878 call sets. It is potentially biased
@@ -153,7 +153,7 @@ equals the number of NA12878 heterozygotes minus the number of CHM1
 heterozygotes. Two sets of filters were applied for filtering. `Hard-polyA' is
 the same as the filter used in Table~1.  `UniMask' filters out genomic regions
 that tend to be repetitive, low-complexity or susceptible to copy number
-changes or systematic artifacts (http://bit.ly/unimask). This filter is
+changes or systematic artefacts (http://bit.ly/unimask). This filter is
 independent of sequencing data.}
 \end{table}
 
@@ -187,28 +187,27 @@ We turned to the CHM1-NA12878 dataset~\citep{Li:2014aa} for an unbiased
 evaluation (Table~2). In this evaluation, FermiKit produces calls of higher
 specificity at the cost of sensitivity. This is probably because FermiKit is
 less powerful in repetitive or duplicated regions or regions affected by
-systematic artifacts. Nonetheless, in well-behaved regions that are outside
+systematic artefacts. Nonetheless, in well-behaved regions that are outside
 `uniMask', the loss of sensitivity is minor. The gain in precision is
 significant if we consider that there may be 5--20k real heterozygous SNPs in
 CHM1~\citep{Li:2014aa}, which should not be counted as FPs.
 
 FermiKit performs well in calling long deletions over 100bp (Table~3). While
 it does not use read pairs, it achieves comparable sensitivity and higher
-specificity in comparison to the state of art. FermiKit also called $~$900
+specificity in comparison to the state of art. FermiKit also called $\sim$900
 novel sequence insertions and identified multiple kb-long contigs having 
-poor alignments to GRCh37 but nearly perfect alignment to a PacBio CHM1
-assembly (J. Chin, personal communication). We also mapped the CHM1 unitigs to
+poor alignments to GRCh37 but nearly perfect alignment to a PacBio assembly of
+CHM1 (J. Chin, personal communication). We also mapped the CHM1 unitigs to
 this assembly and called 71 long deletions, 35 insertions and 262 other events.
 As PacBio assemblies are generally of higher quality, these numbers give a
-rough estimate on false positives produced by FermiKit, although they might not
-be representative in the context of diploid SV calling.
+rough estimate on the number false positives for haploid data.
 
 \section{Conclusions}
 
 A FermiKit assembly is about 3GB compressed. After assembly, variants can be
 called in half an hour to high accuracy. This makes FermiKit a viable option to
-aggressive data compression, greatly reducing the efforts and cost on data
-storage, distribution and reanalyses at an acceptable cost of information loss.
+aggressive data compression, greatly reducing the efforts and expense on data
+storage, distribution and re-analyses at an acceptable cost of information loss.
 
 \section*{Acknowledgement}
 \paragraph{Funding\textcolon} NHGRI U54HG003037; NIH GM100233
