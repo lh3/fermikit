@@ -23,13 +23,13 @@
 
 \begin{abstract}
 \section{Summary:}
-FermiKit is a variant calling pipeline for Illumina data. Unlike mapping based
-pipelines, it starts from {\it de novo} assembly of short reads and then
-maps the assembled unitigs to a reference genome to call SNPs, short
-insertions/deletions (INDELs) and structural variations (SVs). FermiKit
-typically takes about one day to assemble 30-fold human whole-genome data on a
+FermiKit is a variant calling pipeline for Illumina data. It {\it de novo}
+assembles short reads and then maps the assembly against a reference genome to
+call SNPs, short insertions/deletions (INDELs) and structural variations (SVs).
+FermiKit takes about one day to assemble 30-fold human whole-genome data on a
 16-core server with 85GB RAM at the peak, and calls variants in half an hour to
-an accuracy comparable to the current practice.
+an accuracy comparable to the current practice. FermiKit assembly is a reduced
+representation of raw data while retaining most of the original information.
 
 \section{Availability and implementation:} https://github.com/lh3/fermikit
 
@@ -38,18 +38,17 @@ an accuracy comparable to the current practice.
 
 \section{Introduction}
 Deep resequencing of a human sample typically results in a BAM file of
-60--100GB in size, depending on its content. Storing, distributing and
-processing these huge files is becoming a burden for sequencing facilities and
-research labs. While better compression helps to alleviate this issue, it
-adds processing time and can barely halve the size, which does not keep up with
-the rapidly increasing sequencing throughput. A solution is to generate
-gVCF~\citep{Raczy:2013aa} independently for each sample which encodes variants
-along with non-variant sites. However, as of now gVCF is not used to keep
-larger variants and is reference dependent. We still need to go back to raw
-data for new events and when upgrading the reference genome. Another idea from
-the past practice is to assemble sequence reads into contigs that ideally
-retains all information in the raw data, but whether this approach is practical
-to Illumina human resequencing remains to be confirmed.
+60--100GB in size. Storing, distributing and processing many of such huge files
+is becoming a burden for sequencing facilities and research labs. While better
+compression helps to alleviate this issue, it adds processing time and can
+barely halve the size, which does not keep up with the rapidly increasing
+sequencing throughput. Illumina and GATK use gVCF~\citep{Raczy:2013aa} as a
+reduced representation of raw data. However, gVCF is reference dependent and it
+is nontrivial to encode both large and small variants consistently. We still
+need to go back to raw data for long events and when upgrading the reference
+genome. Another idea from the past practice is to assemble sequence reads into
+contigs that ideally retains all information in the raw data, but whether this
+approach is practical to Illumina human resequencing remains to be confirmed.
 
 \begin{methods}
 \section{Methods}
@@ -207,10 +206,9 @@ be representative in the context of diploid SV calling.
 \section{Conclusions}
 
 A FermiKit assembly is about 3GB compressed. After assembly, variants can be
-called in half an hour to an accuracy comparable to those produced from the
-best mapping based pipelines. This makes FermiKit a viable option to aggressive
-data compression, greatly reducing the efforts and cost on data storage,
-distribution and reanalyses.
+called in half an hour to high accuracy. This makes FermiKit a viable option to
+aggressive data compression, greatly reducing the efforts and cost on data
+storage, distribution and reanalyses at an acceptable cost of information loss.
 
 \section*{Acknowledgement}
 \paragraph{Funding\textcolon} NHGRI U54HG003037; NIH GM100233
