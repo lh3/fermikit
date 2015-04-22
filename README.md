@@ -3,18 +3,17 @@
 FermiKit is a *de novo* assembly based variant calling pipeline for deep
 Illumina resequencing data. It assembles reads into unitigs, maps them to the
 reference genome and then calls variants from the alignment to an accuracy
-comparable to conventional mapping based pipelines. The unitigs produced from
-the assembly not only encode SNPs and short INDELs, but also retain long
-deletions, novel sequence insertions and translocations. In theory, we may use
-the unitigs for most downstream analyses without much loss of information. In
-this sense, unitigs are a compressed representation of raw reads.
+comparable to conventional mapping based pipelines (see evaluation in the `tex'
+directory). The assembly does not only encode SNPs and short INDELs, but also
+retains long deletions, novel sequence insertions, translocations and copy
+numbers. It is a reduced representation of raw data of much smaller size,
+which will greatly reduce the cost on data storage, distribution and analyses.
 
 FermiKit is not a prototype. It is a practical pipeline targeting large-scale
 data and has been used to process hundreds of human samples. On a modern server
 with 16 CPU cores, FermiKit can assemble 30-fold human reads in one day with
-about 80GB RAM at the peak. The subsequent mapping and variant calling only
-take half an hour. The performance is compared favorably to the mainstream
-variant calling pipelines we are using today.
+about 85GB RAM at the peak. The subsequent mapping and variant calling only
+take half an hour.
 
 ## Installation and Usage
 
@@ -51,10 +50,17 @@ fermi.kit/htsbox pileup -cuf ref.fa pre1.srt.bam pre2.srt.bam > out.raw.vcf
 
 ## Limitations
 
-FermiKit assumes all reads are single-ended. This leads to loss of power
-especially in semi-repetitive regions. In practice, this issue is minor for
-germline samples. FermiKit actually produces more sensitive INDEL calls
-due to the higher power of its assembly-based approach. Detailed evaluations
-are coming.
+FermiKit does not use paired-end information during assembly, which potentially
+leads to loss of power. In evaluations, the loss is minor for germline samples
+and even without pair information, FermiKit is more sensitive to short INDELs
+and long deletions. Furthermore, with longer upcoming Illumina reads, it is
+actually preferred to merge overlapping ends in a pair before assembly and
+treat the merged reads as regular single-end reads (see AllPaths-LG and
+DISCOVAR).
+
+Another technical limitation of FermiKit is that the error correction phase
+may take excessive RAM when the error rate is unusually high. In practice,
+this concern is also minor. I have assembled ~270 human samples and none of
+them require more than ~90GB RAM.
 
 [zlib]: http://zlib.net
