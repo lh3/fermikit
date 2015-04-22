@@ -3,7 +3,7 @@
 FermiKit is a *de novo* assembly based variant calling pipeline for deep
 Illumina resequencing data. It assembles reads into unitigs, maps them to the
 reference genome and then calls variants from the alignment to an accuracy
-comparable to conventional mapping based pipelines (see evaluation in the `tex'
+comparable to conventional mapping based pipelines (see evaluation in the `tex`
 directory). The assembly does not only encode SNPs and short INDELs, but also
 retains long deletions, novel sequence insertions, translocations and copy
 numbers. It is a reduced representation of raw data of much smaller size,
