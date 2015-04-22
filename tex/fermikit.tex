@@ -57,12 +57,12 @@ ropeBWT2~\citep{Li:2014ab} for BWT construction, an improved version of
 fermi~\citep{Li:2012fk} for {\it de novo} assembly, BWA-MEM~\citep{Li:2013aa}
 for mapping and HTSBox (http://bit.ly/HTSBox) for variant calling. The
 assembler retains the number of supporting reads at each position on the
-contigs. The HTSBox caller simply parses edits in the `pileup' output for small
-variant calling from one or multiple BAMs and extracts alignment break points
+contigs. The caller simply parses edits in the `pileup' output for small
+variant calling from one or multiple BAMs, and extracts alignment break points
 for SV calling. It sets thresholds on mapping quality and the number of
 supporting reads without using sophisticated statistical models. FermiKit
 does not use paired-end information for the time being, but this does not have
-a great impact on its power (see Results). With longer upcoming Illumina reads,
+a great impact on its power empirically. With longer upcoming Illumina reads,
 it will be actually preferred to merge overlapping ends and treat them as
 single-end reads.
 
@@ -98,7 +98,7 @@ S4+ & FermiKit      & 71,262 & 452    & 4,197    & 536 \\
 	& HC+hardFilter & 75,040 & 672    & 2,477    & 653 \\
 	& HC+VQSR       & 103,595& 10,492 & 2,401    & 1,622 \\
 \botrule
-\end{tabular}}{PCR-free Platinum Genome NA12878 (PG-), four Illumina X10 lanes
+\end{tabular}}{PCR-free Platinum Genome NA12878 (PG-; AC:ERR194147), four Illumina X10 lanes
 of PCR-free NA12878 (S7-, S11-, S2- and S12- under BaseSpace project ID
 18475457) and two X10 lanes of PCR-amplified NA12878 (S1+ and S4+ under project
 ID 8998991) were acquired and called with FermiKit-0.9, FreeBayes-0.9.20
@@ -146,7 +146,7 @@ FreeBayes& hard-polyA & 2,026,883 & 59,422 & 190,587 & 30,909 \\
 HC       & hard-polyA & 2,003,655 & 32,030 & 267,870 & 15,541 \\
          & uniMask    & 1,824,658 & 14,912 & 133,458 & 2,046 \\
 \botrule
-\end{tabular}}{SNP/INDELs were called from the CHM1 and NA12878 BWA-MEM
+\end{tabular}}{SNP/INDELs were called from the CHM1 (AC:SRR642636 through SRR642641) and NA12878 BWA-MEM
 alignments used by~\citet{Li:2014aa}. On the assumption that CHM1 is haploid,
 (heterozygous) FP equals the number of CHM1 heterozygotes and (heterozygous) TP
 equals the number of NA12878 heterozygotes minus the number of CHM1
@@ -205,7 +205,7 @@ rough estimate on the number false positives for haploid data.
 \section{Conclusions}
 
 A FermiKit assembly is about 3GB compressed. After assembly, variants can be
-called in half an hour to high accuracy. This makes FermiKit a viable option to
+called in half an hour to high accuracy. This makes FermiKit a viable option for
 aggressive data compression, greatly reducing the efforts and expense on data
 storage, distribution and re-analyses at an acceptable cost of information loss.
 
