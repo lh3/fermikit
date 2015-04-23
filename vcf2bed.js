@@ -24,7 +24,7 @@ function b8_parse_vcf_multi(t) // t = vcf_line.split("\t")
 	// loop through each ALT allele
 	for (var i = 0; i < s.length; ++i) {
 		if (t[3].length == 1 && s[i].length == 1) { // SNP
-			if (t[3] != s[i]) a.push([t[1], 0, t[3], s[i], ACA[i+1], tot]);
+			if (t[3] != s[i]) a.push([t[1], t[1]+1, 0, t[3], s[i], ACA[i+1], tot]);
 		} else if (cigar.length) { // MNP or INDEL from freebayes
 			var x = 0, y = 0;
 			var m4, re = /(\d+)([MXID])/g;
@@ -33,18 +33,18 @@ function b8_parse_vcf_multi(t) // t = vcf_line.split("\t")
 				if (m4[2] == 'X') {
 					for (var j = 0; j < l; ++j) {
 						var u = t[3].substr(x+j, 1), v = s[i].substr(y+j, 1);
-						a.push([t[1] + x, 0, u, v, ACA[i+1], tot]);
+						a.push([t[1] + x, t[1]+x+1, 0, u, v, ACA[i+1], tot]);
 					}
 					x += l, y += l;
 				} else if (m4[2] == 'I') {
 					if (x == 0 || y == 0) throw Error("Leading I/D");
 					var u = t[3].substr(x-1, 1), v = s[i].substr(y-1, l+1);
-					a.push([t[1] + x - 1, l, u, v, ACA[i+1], tot]);
+					a.push([t[1] + x - 1, t[1]+x, l, u, v, ACA[i+1], tot]);
 					y += l;
 				} else if (m4[2] == 'D') {
 					if (x == 0 || y == 0) throw Error("Leading I/D");
 					var u = t[3].substr(x-1, l+1), v = s[i].substr(y-1, 1);
-					a.push([t[1] + x - 1, -l, u, v, ACA[i+1], tot]);
+					a.push([t[1] + x - 1, t[1]+x+l, -l, u, v, ACA[i+1], tot]);
 					x += l;
 				} else if (m4[2] == 'M') x += l, y += l;
 			}
@@ -52,13 +52,13 @@ function b8_parse_vcf_multi(t) // t = vcf_line.split("\t")
 			var l = t[3].length < s[i].length? t[3].length : s[i].length;
 			for (var j = 0; j < l; ++j) { // decompose long variants
 				var u = t[3].substr(j, 1), v = s[i].substr(j, 1);
-				if (u != v) a.push([t[1] + j, 0, u, v, ACA[i+1], tot]);
+				if (u != v) a.push([t[1] + j, t[1]+j+1, 0, u, v, ACA[i+1], tot]);
 			}
-			if (t[3].length != s[i].length) // INDEL
-				a.push([t[1] + l - 1, s[i].length - t[3].length, t[3].substr(l-1), s[i].substr(l-1), ACA[i+1], tot]);
+			var d = s[i].length - t[3].length;
+			if (d != 0) a.push([t[1] + l - 1, t[1] + t[3].length, d, t[3].substr(l-1), s[i].substr(l-1), ACA[i+1], tot]);
 		}
 	}
-	return a; // [pos, indelLen, ref, alt, AC, tot]
+	return a; // [start, end, indelLen, ref, alt, AC, tot]
 }
 
 var file = arguments.length == 0? new File() : new File(arguments[0]);
@@ -70,7 +70,7 @@ while (file.readline(buf) >= 0) {
 	var t = line.split("\t");
 	var a = b8_parse_vcf_multi(t);
 	for (var i = 0; i < a.length; ++i)
-		print(t[0], a[i].join("\t"));
+		print(t[0], a[i].join("\t"), t[6]);
 }
 
 buf.destroy();
