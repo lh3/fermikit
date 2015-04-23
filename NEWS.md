@@ -1,6 +1,8 @@
 * 0.12
   - updated htsbox to r300 for SV calling
-  - updated hapdip to r15 for a couple minor changes and fixes
+  - updated hapdip to r15 for a couple minor changes and fixes. They are
+	irrelevant to fermi.kit, though.
+  - This is the first public release of fermi.kit.
 * 0.11
   - updated fermi2.pl to r188 for robustness (no method changes)
   - updated htsbox to r289 for quality binning and razip fix
@@ -19,11 +21,13 @@
   - updated fermi2.pl. It uses a new formula to automatically set -k.
   - updated htsbox to r281. No effective changes.
   - For 100bp reads, the assembly is the same as v0.8.
+  - This version is used to produce the results in the manuscript.
 * 0.8
   - updated bfc to r177. r177 fixed a bug which causes segfault if the read
     length is close to 128, 256, 512bp, etc. The results should be the same
     (except the random effect).
   - fermi2.pl optionally skip error correction.
+  - This version is used to assemble 261 SGDP samples.
 * 0.7
   - used to assemble SGDP public samples
   - used to assemble the CHM1-NA12878 pair v4
