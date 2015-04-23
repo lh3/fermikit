@@ -192,7 +192,7 @@ systematic artefacts. Nonetheless, in well-behaved regions that are outside
 significant if we consider that there may be 5--20k real heterozygous SNPs in
 CHM1~\citep{Li:2014aa}, which should not be counted as FPs.
 
-FermiKit performs well in calling long deletions over 100bp (Table~3). While
+FermiKit performs well in calling long deletions (Table~3). While
 it does not use read pairs, it achieves comparable sensitivity and higher
 specificity in comparison to the state of art. FermiKit also called $\sim$900
 novel sequence insertions and identified multiple kb-long contigs having 
@@ -204,10 +204,12 @@ rough estimate on the number false positives for haploid data.
 
 \section{Conclusions}
 
-A FermiKit assembly is about 3GB compressed. After assembly, variants can be
-called in half an hour to high accuracy. This makes FermiKit a viable option for
+A FermiKit assembly is about 3GB compressed. After assembly, variants from a
+single sample can be called in half an hour to high accuracy. Jointly calling
+261 SGDP samples only took $\sim$40 CPU hours.  FermiKit is a viable option for
 aggressive data compression, greatly reducing the efforts and expense on data
-storage, distribution and re-analyses at an acceptable cost of information loss.
+storage, distribution and re-analyses at an acceptable cost of information
+loss.
 
 \section*{Acknowledgement}
 \paragraph{Funding\textcolon} NHGRI U54HG003037; NIH GM100233
