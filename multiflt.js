@@ -125,13 +125,14 @@ if (arguments.length == getopt.ind) {
 warn('Processing VCF...');
 
 var new_lines = "";
-new_lines += '##FILTER=<ID=TOPSR,Description="TOPSR < "' + min_top_sr + '>\n';
+new_lines += '##FILTER=<ID=TOPSR,Description="TOPSR < ' + min_top_sr + '">\n';
 new_lines += '##FILTER=<ID=CA0,Description="ALT allele count equals zero">\n';
 for (var i = 0; i < beds.length; ++i)
 	new_lines += '##INFO=<ID=' + beds[i][0] + ',Number=0,Type=Flag>\n';
 new_lines += '##INFO=<ID=TOPSR,Number=R,Type=Integer,Description="best SR across samples">\n';
-new_lines += '##INFO=<ID=CA,Number=R,Type=Integer,Description="count of all alleles in genotypes">\n';
-new_lines += '##INFO=<ID=SR,Number=R,Type=Integer,Description="number of supporting reads">';
+new_lines += '##INFO=<ID=SR,Number=R,Type=Integer,Description="number of supporting reads">\n';
+new_lines += '##INFO=<ID=CA,Number=R,Type=Integer,Description="count of reference and alternate alleles">\n';
+new_lines += '##INFO=<ID=CG,Number=G,Type=Integer,Description="count of genotypes">';
 
 var file = new File(arguments[getopt.ind]);
 var buf = new Bytes();
@@ -149,16 +150,25 @@ while (file.readline(buf) >= 0) {
 	for (var i = 0; i < s.length; ++i)
 		if (s[i] == 'GT') gt = i;
 		else if (s[i] == 'SR') sr = i;
-	var ACA = [], SR = [], topSR = [];
-	var n_alleles = t[4].split(",").length + 1;
+	var ACA = [], SR = [], topSR = [], CG = [];
+	var n_alleles = t[4].split(",").length + 1, n_gt = Math.floor(n_alleles * (n_alleles + 1) / 2 + .499);
 	for (var i = 0; i < n_alleles; ++i) ACA[i] = SR[i] = topSR[i] = 0;
+	for (var i = 0; i < n_gt; ++i) CG[i] = 0;
 	for (var j = 9; j < t.length; ++j) {
 		s = t[j].split(":");
 		if (gt != null) {
 			var m;
 			if ((m = /(\.|\d+)[\/\|](\.|\d+)/.exec(s[gt])) != null) {
-				if (m[1] != '.') ++ACA[parseInt(m[1])];
-				if (m[2] != '.') ++ACA[parseInt(m[2])];
+				var h1 = m[1] != '.'? parseInt(m[1]) : -1;
+				var h2 = m[2] != '.'? parseInt(m[2]) : -1;
+				if (h1 >= 0) ++ACA[h1];
+				if (h2 >= 0) ++ACA[h2];
+				if (h1 >= 0 && h2 >= 0) {
+					var tmp;
+					if (h1 > h2) tmp = h1, h1 = h2, h2 = tmp;
+					tmp = Math.floor(h1 * (h1 + 1) / 2 + h2 + .499);
+					++CG[tmp];
+				}
 			}
 		}
 		if (sr != null) {
@@ -173,7 +183,7 @@ while (file.readline(buf) >= 0) {
 	// set INFO
 	if (t[7] == '.') t[7] = '';
 	else t[7] += ';';
-	t[7] += 'CA=' + ACA.join(",") + ';SR=' + SR.join(",") + ';TOPSR=' + topSR.join(",");
+	t[7] += 'CA=' + ACA.join(",") + ';SR=' + SR.join(",") + ';TOPSR=' + topSR.join(",") + ';CG=' + CG.join(",");
 	// test BED
 	for (var i = 0; i < beds.length; ++i) {
 		var start = parseInt(t[1]) - 1;
