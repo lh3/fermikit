@@ -104,9 +104,12 @@ function read_bed(fn, shift)
  * Main function *
  *****************/
 
-var c, beds = [], min_top_sr = 10;
-while ((c = getopt(arguments, "b:n:")) != null) {
-	if (c == 'b') {
+var c, beds = [], min_top_sr = 10, no_filter = false, no_gt = false;
+while ((c = getopt(arguments, "GFb:n:")) != null) {
+	if (c == 'n') min_top_sr = parseInt(getopt.arg);
+	else if (c == 'F') no_filter = true;
+	else if (c == 'G') no_gt = true;
+	else if (c == 'b') {
 		var m, label = null, fn = null;
 		if ((m = /([^\s=]+)=(\S+)/.exec(getopt.arg)) != null) {
 			label = m[1];
@@ -114,11 +117,16 @@ while ((c = getopt(arguments, "b:n:")) != null) {
 		} else label = fn = getopt.arg;
 		warn('Reading BED file ' + fn + '...');
 		beds.push([label, read_bed(fn, 11)]);
-	} else if (c == 'n') min_top_sr = parseInt(getopt.arg);
+	}
 }
 
 if (arguments.length == getopt.ind) {
 	print("Usage: k8 multiflt.js [options] <htsbox-pileup.vcf>");
+	print("Options:");
+	print("  -b STR=FILE   flag STR in INFO if overlapping regions in BED FILE [null]");
+	print("  -n INT        threshold on the SR filter [10]");
+	print("  -G            discard genotype fields");
+	print("  -F            don't set FILTER");
 	exit(1);
 }
 
@@ -140,7 +148,10 @@ var buf = new Bytes();
 while (file.readline(buf) >= 0) {
 	var line = buf.toString();
 	if (line.charAt(0) == '#') {
-		if (line.charAt(1) != '#') print(new_lines);
+		if (line.charAt(1) != '#') {
+			print(new_lines);
+			if (no_gt) line = line.split("\t", 8).join("\t");
+		}
 		print(line);
 		continue;
 	}
@@ -183,7 +194,8 @@ while (file.readline(buf) >= 0) {
 	// set INFO
 	if (t[7] == '.') t[7] = '';
 	else t[7] += ';';
-	t[7] += 'CA=' + ACA.join(",") + ';SR=' + SR.join(",") + ';TOPSR=' + topSR.join(",") + ';CG=' + CG.join(",");
+	t[7] += 'CA=' + ACA.join(",") + ';CG=' + CG.join(",");
+	if (sr != null) t[7] += ';SR=' + SR.join(",") + ';TOPSR=' + topSR.join(",");
 	// test BED
 	for (var i = 0; i < beds.length; ++i) {
 		var start = parseInt(t[1]) - 1;
@@ -191,14 +203,17 @@ while (file.readline(buf) >= 0) {
 			t[7] += ';' + beds[i][0];
 	}
 	// set FILTER
-	var alt_cnt = 0, flt = '', max_topSR = 0;
-	for (var i = 1; i < ACA.length; ++i)
-		alt_cnt += ACA[i], max_topSR = max_topSR > topSR[i]? max_topSR : topSR[i];
-	if (alt_cnt == 0) flt = 'CA0';
-	if (max_topSR < min_top_sr)
-		flt = flt == ''? 'TOPSR' : flt + ';TOPSR';
-	t[6] = flt == ''? 'PASS' : flt;
+	if (!no_filter) {
+		var alt_cnt = 0, flt = '', max_topSR = 0;
+		for (var i = 1; i < ACA.length; ++i)
+			alt_cnt += ACA[i], max_topSR = max_topSR > topSR[i]? max_topSR : topSR[i];
+		if (alt_cnt == 0) flt = 'CA0';
+		if (sr != null && max_topSR < min_top_sr)
+			flt = flt == ''? 'TOPSR' : flt + ';TOPSR';
+		t[6] = flt == ''? 'PASS' : flt;
+	}
 	// print out
+	if (no_gt) t.length = 8;
 	print(t.join("\t"));
 }
 
