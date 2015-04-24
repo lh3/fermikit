@@ -67,7 +67,7 @@ them require more than ~90GB RAM.
 Running FermiKit twice on the same dataset under the same setting is likely to
 result in two slightly different assemblies. Please see bfc/count.c for the
 cause in BFC. Unitig construction also has a random factor under the
-multi-threading mode. Nonetheless, FermiKit should produce the same calls from
+multi-threading mode. Nonetheless, FermiKit should call the same variants from
 the same assembly.
 
 [zlib]: http://zlib.net
