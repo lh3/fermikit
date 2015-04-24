@@ -46,7 +46,7 @@ It is also possible to call SNPs and short INDELs from multiple BAMs at the
 same time and produce a multi-sample VCF:
 ```sh
 fermi.kit/htsbox pileup -cuf ref.fa pre1.srt.bam pre2.srt.bam > out.raw.vcf
-fermi.kit/k8 fermi.kit/multiflt.js out.raw.vcf > out.flt.vcf
+fermi.kit/k8 fermi.kit/hapdip.js vcfsum -f out.raw.vcf > out.flt.vcf
 ```
 
 ## Limitations
