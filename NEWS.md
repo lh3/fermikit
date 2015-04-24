@@ -1,7 +1,6 @@
 * 0.12
-  - updated htsbox to r300 for SV calling
-  - updated hapdip to r15 for a couple minor changes and fixes. They are
-	irrelevant to fermi.kit, though.
+  - updated htsbox to r302 for SV calling
+  - updated hapdip to r19 for multi-sample filtering.
   - This is the first public release of fermi.kit.
 * 0.11
   - updated fermi2.pl to r188 for robustness (no method changes)
