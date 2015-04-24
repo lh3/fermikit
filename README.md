@@ -6,8 +6,9 @@ reference genome and then calls variants from the alignment to an accuracy
 comparable to conventional mapping based pipelines (see evaluation in the `tex`
 directory). The assembly does not only encode SNPs and short INDELs, but also
 retains long deletions, novel sequence insertions, translocations and copy
-numbers. It is a reduced representation of raw data of much smaller size,
-which will greatly reduce the cost on data storage, distribution and analyses.
+numbers. It is a heavily reduced representation of raw data. Storing,
+distributing and analyzing assemblies is much faster and cheaper at an
+acceptable loss of information.
 
 FermiKit is not a prototype. It is a practical pipeline targeting large-scale
 data and has been used to process hundreds of human samples. On a modern server
