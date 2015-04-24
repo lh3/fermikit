@@ -64,4 +64,10 @@ may take excessive RAM when the error rate is unusually high. In practice,
 this concern is also minor. I have assembled ~270 human samples and none of
 them require more than ~90GB RAM.
 
+Running FermiKit twice on the same dataset under the same setting is likely to
+result in two slightly different assemblies. Please see bfc/count.c for the
+cause in BFC. Unitig construction also has a random factor under the
+multi-threading mode. Nonetheless, FermiKit should produce the same calls from
+the same assembly.
+
 [zlib]: http://zlib.net
