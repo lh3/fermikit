@@ -38,7 +38,7 @@ representation of raw data while retaining most of the original information.
 
 \section{Introduction}
 Deep resequencing of a human sample typically results in a BAM file of
-60--100GB in size. Storing, distributing and processing many of such huge files
+60--100GB in size. Storing, distributing and processing many such huge files
 is becoming a burden for sequencing facilities and research labs. While better
 compression helps to alleviate this issue, it adds processing time and can
 barely halve the size, which does not keep up with the rapidly increasing
@@ -108,7 +108,7 @@ was used for mapping with PCR duplicates marked by
 Samblaster~\citep{Faust:2014aa}.  Short variant calls were hard filtered with
 hapdip (http://bit.ly/HapDip). GATK-VQSR was also applied to HC calls. The
 filtered calls were compared to GIAB-v2.18 excluding poly-A regions longer than
-7bp plus 10bp flanking. A true variant is counted as an FN if there are no
+6bp plus 10bp flanking. A true variant is counted as an FN if there are no
 called variants within 10bp around the truth, and a called variant is counted
 as an FP if it falls in GIAB trusted regions and there are no true variants
 within 10bp around the called variant.}
@@ -130,7 +130,7 @@ GIAB was generated from multiple NA12878 call sets. It is potentially biased
 against new callers and biased towards easier regions that can be called by the
 existing callers. For example, the GATK call set available from the Platinum
 Genome website has 13,278 FN SNPs and 46 FPs out of 2.03Gb confident regions
-(i.e. one SNP error per 44Mbp), which is overly good and worrying.
+(i.e. one SNP error per 44Mbp), which is overly good and is worrying.
 
 \begin{table}[t]
 \processtable{Evaluation on SNP/INDEL accuracy with CHM1-NA12878 pair}
@@ -146,7 +146,7 @@ FreeBayes& hard-polyA & 2,026,883 & 59,422 & 190,587 & 30,909 \\
 HC       & hard-polyA & 2,003,655 & 32,030 & 267,870 & 15,541 \\
          & uniMask    & 1,824,658 & 14,912 & 133,458 & 2,046 \\
 \botrule
-\end{tabular}}{SNP/INDELs were called from the CHM1 (AC:SRR642636 through SRR642641) and NA12878 BWA-MEM
+\end{tabular}}{SNP/INDELs were called from the CHM1 (AC:SRR642636 through SRR642641) and NA12878-PG- BWA-MEM
 alignments used by~\citet{Li:2014aa}. On the assumption that CHM1 is haploid,
 (heterozygous) FP equals the number of CHM1 heterozygotes and (heterozygous) TP
 equals the number of NA12878 heterozygotes minus the number of CHM1
@@ -154,7 +154,7 @@ heterozygotes. Two sets of filters were applied for filtering. `Hard-polyA' is
 the same as the filter used in Table~1.  `UniMask' filters out genomic regions
 that tend to be repetitive, low-complexity or susceptible to copy number
 changes or systematic artefacts (http://bit.ly/unimask). This filter is
-independent of sequencing data.}
+sample independent.}
 \end{table}
 
 \begin{table}[t]
