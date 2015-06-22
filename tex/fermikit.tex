@@ -23,7 +23,7 @@
 
 \begin{abstract}
 \section{Summary:}
-FermiKit is a variant calling pipeline for Illumina data. It {\it de novo}
+FermiKit is a variant calling pipeline for Illumina whole-genome germline data. It {\it de novo}
 assembles short reads and then maps the assembly against a reference genome to
 call SNPs, short insertions/deletions (INDELs) and structural variations (SVs).
 FermiKit takes about one day to assemble 30-fold human whole-genome data on a
@@ -53,58 +53,61 @@ approach is practical to Illumina human resequencing remains to be confirmed.
 \begin{methods}
 \section{Methods}
 The FermiKit pipeline uses BFC~\citep{Li:2015aa-tmp} for error correction,
-ropeBWT2~\citep{Li:2014ab} for BWT construction, an improved version of
-fermi~\citep{Li:2012fk} for {\it de novo} assembly, BWA-MEM~\citep{Li:2013aa}
-for mapping and HTSBox (http://bit.ly/HTSBox) for variant calling. The
-assembler retains the number of supporting reads at each position on the
+ropeBWT2~\citep{Li:2014ab} for BWT construction,
+Fermi~\citep{Li:2012fk} for {\it de novo} assembly, BWA-MEM~\citep{Li:2013aa}
+for mapping and HTSBox (http://bit.ly/HTSBox) for variant calling.
+The assembler retains the number of supporting reads at each position on the
 contigs. The caller simply parses edits in the `pileup' output for small
 variant calling from one or multiple BAMs, and extracts alignment break points
 for SV calling. It sets thresholds on mapping quality and the number of
-supporting reads without using sophisticated statistical models. FermiKit
-does not use paired-end information for the time being, but this does not have
-a great impact on its power empirically. With longer upcoming Illumina reads,
-it will be actually preferred to merge overlapping ends and treat them as
-single-end reads.
+supporting reads without using sophisticated statistical models.
+In comparison to our earlier work~\citep{Li:2012fk}, FermiKit is faster, more
+sensitive and more complete as a pipeline.
+
+FermiKit does not use paired-end information for the time being, but this does
+not have a great impact on its power empirically. With longer upcoming Illumina
+reads, it will be actually preferred to merge overlapping ends and treat them
+as single-end reads.
 
 \end{methods}
 
 \begin{table}[t]
-\processtable{GIAB evaluation on SNP/INDEL accuracy}
+\processtable{GIAB evaluation of SNP/INDEL accuracy for sample NA12878}
 {\footnotesize
 \begin{tabular}{lp{1.7cm}rrrr}
 \toprule
 Sample & Caller     & SNP-FN & SNP-FP & InDel-FN & InDel-FP \\
 \midrule
 PG- & FermiKit      & 45,700 & 824    & 2,324    & 472 \\
-	& FreeBayes     & 21,601 & 440    & 3,856    & 616 \\
+	& FreeBayes     & 21,548 & 439    & 3,858    & 400 \\
     & HC+hardFilter & 27,010 & 144    & 943      & 370 \\
 	& HC+VQSR       & 128,604& 1,955  & 1,423    & 366 \\
 S7- & FermiKit      & 65,217 & 531    & 2,340    & 549 \\
-	& FreeBayes     & 50,866 & 675    & 2,895    & 670 \\
+	& FreeBayes     & 50,796 & 676    & 2,891    & 420 \\
     & HC+hardFilter & 66,847 & 228    & 1,543    & 457 \\
 	& HC+VQSR       & 103,979& 1,508  & 1,396    & 605 \\
 S11-& FermiKit      & 91,468 & 541    & 2,973    & 554 \\
-	& FreeBayes     & 52,120 & 904    & 3,200    & 672 \\
+	& FreeBayes     & 52,071 & 903    & 3,195    & 431 \\
 	& HC+hardFilter & 65,223 & 407    & 1,502    & 472 \\
 	& HC+VQSR       & 111,504& 1,694  & 1,175    & 765 \\
 S2- & FermiKit      & 63,445 & 448    & 2,244    & 568 \\
 S12-& FermiKit      & 74,940 & 501    & 2,562    & 553 \\
 S1+ & FermiKit      & 67,816 & 455    & 4,051    & 516 \\
-	& FreeBayes     & 63,147 & 902    & 4,626    & 660 \\
+	& FreeBayes     & 63,101 & 902    & 4,625    & 436 \\
     & HC+hardFilter & 71,174 & 531    & 2,376    & 591 \\
 	& HC+VQSR       & 108,101& 8,852  & 2,377    & 1,827 \\
 S4+ & FermiKit      & 71,262 & 452    & 4,197    & 536 \\
-	& FreeBayes     & 65,476 & 1,057  & 4,782    & 661 \\
+	& FreeBayes     & 65,427 & 1,061  & 4,781    & 437 \\
 	& HC+hardFilter & 75,040 & 672    & 2,477    & 653 \\
 	& HC+VQSR       & 103,595& 10,492 & 2,401    & 1,622 \\
 \botrule
-\end{tabular}}{PCR-free Platinum Genome NA12878 (PG-; AC:ERR194147), four Illumina X10 lanes
+\end{tabular}}{PCR-free Platinum Genome NA12878 (PG-; AC:ERR194147; 100bp reads), four Illumina X10 lanes
 of PCR-free NA12878 (S7-, S11-, S2- and S12- under BaseSpace project ID
-18475457) and two X10 lanes of PCR-amplified NA12878 (S1+ and S4+ under project
-ID 8998991) were acquired and called with FermiKit-0.9, FreeBayes-0.9.20
+18475457; 150bp) and two X10 lanes of PCR-amplified NA12878 (S1+ and S4+ under project
+ID 8998991; 150bp) were acquired and called with FermiKit-0.9, FreeBayes-0.9.20
 (option: `--experimental-gls --min-repeat-entropy 1') and HC-3.3 (option:
 `-stand\_emit\_conf 10 -stand\_call\_conf 30'). For FreeBayes and HC, BWA-MEM
-was used for mapping with PCR duplicates marked by
+was used for mapping against GRCh37 plus decoy (http://bit.ly/GRCh37d5) with duplicates marked by
 Samblaster~\citep{Faust:2014aa}.  Short variant calls were hard filtered with
 hapdip (http://bit.ly/HapDip). GATK-VQSR was also applied to HC calls. The
 filtered calls were compared to GIAB-v2.18 excluding poly-A regions longer than
@@ -115,10 +118,10 @@ within 10bp around the called variant.}
 \end{table}
 
 \section{Results}
-We have run FermiKit on multiple NA12878 whole-genome data sets along with
+We have run FermiKit on multiple whole-genome data sets of sample NA12878 along with
 GATK-HaplotypeCaller (HC in brief) and FreeBayes~\citep{Garrison:2012aa}.
 We used Genome-In-A-Bottle (GIAB; \citealt{Zook:2014ab}) as truth data
-to evaluate the accuracy (Table~1). Recent Illumia data have excessive
+to evaluate the accuracy (Table~1). Recent Illumina data have excessive
 systematic errors around poly-A which HC does not handle well. It called over
 4000 false INDELs from sample S1+ and S4+ with the vast majority around poly-A.
 We excluded these regions to avoid one simple error source greatly affecting
@@ -146,7 +149,7 @@ FreeBayes& hard-polyA & 2,026,883 & 59,422 & 190,587 & 30,909 \\
 HC       & hard-polyA & 2,003,655 & 32,030 & 267,870 & 15,541 \\
          & uniMask    & 1,824,658 & 14,912 & 133,458 & 2,046 \\
 \botrule
-\end{tabular}}{SNP/INDELs were called from the CHM1 (AC:SRR642636 through SRR642641) and NA12878-PG- BWA-MEM
+\end{tabular}}{SNP/INDELs were called from the CHM1 (AC:SRR642636 through SRR642641; 100bp) and NA12878-PG- BWA-MEM
 alignments used by~\citet{Li:2014aa}. On the assumption that CHM1 is haploid,
 (heterozygous) FP equals the number of CHM1 heterozygotes and (heterozygous) TP
 equals the number of NA12878 heterozygotes minus the number of CHM1
@@ -170,17 +173,17 @@ PG- & FermiKit  & 0.43 / 0.20 & 0.52 / 0.14 & 0.34 / 0.22 & 0.59 / 0.09\\
     & DELLY     & 0.47 / 0.34 & 0.50 / 0.22 & 0.31 / 0.28 & 0.58 / 0.16\\
     & LUMPY     & 0.72 / 0.34 & 0.76 / 0.29 & 0.68 / 0.37 & 0.79 / 0.20\\
 \botrule
-\end{tabular}}{FermiKit was used to call 100bp or longer deletions from the
+\end{tabular}}{FermiKit was used to call 100bp--100kbp deletions from the
 PG-, S7- and S1+ datasets. DELLY~\citep{Rausch:2012aa} and LUMPY PG- calls were
 acquired from http://bit.ly/bcbsval (B. Chapman, personal communication). For
 all call sets, overlapping events were merged and deletions longer than 100kbp
 were discarded.  The two numbers in a cell at row $R$ and column $C$ give the
 false negative rate and false positive rate of call set $R$, assuming truth set
 $C$ is correct and complete.  In the table, truth set `1000g pilot' consists of
-deletions by \citet{Mills:2011aa} and further validated
-by~\citet{Layer:2014aa}; `Ensemble' contains validated calls by multiple
-callers; `LUMPY' consists of validated LUMPY-only deletions; `Merged' is the
-union of all the three truth sets above.}
+3,142 deletions by \citet{Mills:2011aa} and further validated
+by~\citet{Layer:2014aa}; `Ensemble' contains 4,095 validated calls by multiple
+callers; `LUMPY' consists of 2,657 validated LUMPY-only deletions; `Merged' is the
+union of all the three truth sets above, containing 4,695 deletion calls.}
 \end{table}
 
 We turned to the CHM1-NA12878 dataset~\citep{Li:2014aa} for an unbiased
@@ -194,19 +197,19 @@ CHM1~\citep{Li:2014aa}, which should not be counted as FPs.
 
 FermiKit performs well in calling long deletions (Table~3). While
 it does not use read pairs, it achieves comparable sensitivity and higher
-specificity in comparison to the state of art. FermiKit also called $\sim$900
-novel sequence insertions and identified multiple kb-long contigs having 
+specificity in comparison to the popular tools. FermiKit also called $\sim$480
+insertions over 100bp and identified multiple kb-long contigs having 
 poor alignments to GRCh37 but nearly perfect alignment to a PacBio assembly of
-CHM1 (J. Chin, personal communication). We also mapped the CHM1 unitigs to
-this assembly and called 71 long deletions, 35 insertions and 262 other events.
+CHM1 (AC:GCA\_001007805.1). We also mapped the CHM1 FermiKit unitigs to
+the PacBio assembly and called 71 long deletions, 11 insertions and 262 other events.
 As PacBio assemblies are generally of higher quality, these numbers give a
-rough estimate on the number false positives for haploid data.
+rough estimate on the number potential false positives of Fermi on a haploid data set.
 
 \section{Conclusions}
 
 A FermiKit assembly is about 3GB compressed. After assembly, single-sample
 variants can be obtained in half an hour to high accuracy through mapping
-against a reference genome. Jointly calling 261 aligned SGDP samples only took
+against a reference genome. Jointly calling 261 aligned whole-genome samples only took
 $\sim$40 CPU hours.  FermiKit is a viable option for aggressive data
 compression, greatly reducing the efforts and expense on data storage,
 distribution and re-analyses at an acceptable cost of information loss.
