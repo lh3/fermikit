@@ -52,17 +52,16 @@ approach is practical to Illumina human resequencing remains to be confirmed.
 
 \begin{methods}
 \section{Methods}
-The FermiKit pipeline uses BFC~\citep{Li:2015aa-tmp} for error correction,
+FermiKit uses BFC~\citep{Li:2015aa-tmp} for error correction,
 ropeBWT2~\citep{Li:2014ab} for BWT construction,
 Fermi~\citep{Li:2012fk} for {\it de novo} assembly, BWA-MEM~\citep{Li:2013aa}
 for mapping and HTSBox (http://bit.ly/HTSBox) for variant calling.
-The assembler retains the number of supporting reads at each position on the
-contigs. The caller simply parses edits in the `pileup' output for small
+The caller simply parses edits in the `pileup' output for small
 variant calling from one or multiple BAMs, and extracts alignment break points
-for SV calling. It sets thresholds on mapping quality and the number of
+for SV calling, though it may misclassify some SV events~\citep{Trappe:2014fj}. FermiKit sets thresholds on mapping quality and the number of
 supporting reads without using sophisticated statistical models.
 In comparison to our earlier work~\citep{Li:2012fk}, FermiKit is faster, more
-sensitive and more complete as a pipeline.
+sensitive (due to better error correction) and more complete as a pipeline.
 
 FermiKit does not use paired-end information for the time being, but this does
 not have a great impact on its power empirically. With longer upcoming Illumina
