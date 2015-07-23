@@ -27,6 +27,7 @@ fi
 
 cp 11_1910000_1940000.fa ARTIFACT_11_1910000_1940000.fa
 ../fermi.kit/bwa index ARTIFACT_11_1910000_1940000.fa
+../fermi.kit/htsbox faidx ARTIFACT_11_1910000_1940000.fa
 ../fermi.kit/run-calling ARTIFACT_11_1910000_1940000.fa ARTIFACT_HS1011_rearrangement.mag.gz | bash -ex -o pipefail
 
 # TODO: look for evidence of breakpoints in ARTIFACT_HS1011_rearrangement.srt.bam
