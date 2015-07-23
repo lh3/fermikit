@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/lh3/fermikit.svg?branch=master)](https://travis-ci.org/lh3/fermikit)
 ## Introduction
 
 FermiKit is a *de novo* assembly based variant calling pipeline for deep
