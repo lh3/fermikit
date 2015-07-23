@@ -1,0 +1,8 @@
+language: c
+sudo: false
+addons:
+  apt:
+    packages:
+      - samtools
+script: 
+- make test
