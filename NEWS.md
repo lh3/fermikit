@@ -5,6 +5,7 @@
   - dropped samtools dependency for BAM sorting (now by htsbox)
   - added test script (by Mike Lin)
   - The assembly components are identical to v0.12.
+  - The calling components are also identical.
 * 0.12
   - updated htsbox to r302 for SV calling
   - updated hapdip to r19 for multi-sample filtering.
