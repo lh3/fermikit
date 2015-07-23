@@ -54,5 +54,11 @@ fermi.kit/run-calling:run-calling
 fermi.kit/k8:k8-0.2.1.tar.bz2 fermi.kit
 	(cd fermi.kit; tar -jxf ../$< k8-`uname -s|tr [A-Z] [a-z]` && mv k8-`uname -s|tr [A-Z] [a-z]` k8)
 
+test: all
+	test/test.sh
+
 clean:clean-recur
 	rm -fr fermi.kit
+	rm -f test/ARTIFACT_*
+
+.PHONY: all all-recur clean-recur prepare test clean
