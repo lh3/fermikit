@@ -50,7 +50,7 @@ $cmd .= "[ ! -f $prefix.unsrt.sam.gz ] && $root/bwa mem -t$opts{t} -x intractg $
 $cmd .= "[ ! -f $prefix.srt.bam ] && $root/htsbox samsort -S $prefix.unsrt.sam.gz > $prefix.srt.bam;\n";
 $cmd .= "$root/htsbox pileup -cuf $ref $prefix.srt.bam | gzip -1 > $prefix.raw.vcf.gz;\n";
 $cmd .= "($root/k8 $root/hapdip.js deovlp $prefix.raw.vcf.gz | $root/k8 $root/hapdip.js anno | gzip -1 > $prefix.tmp.vcf.gz) 2> $prefix.flt.vcf.log;\n";
-$cmd .= "$root/k8 $root/hapdip.js filter -q3 $prefix.tmp.vcf.gz | gzip -1 > $prefix.flt.vcf.gz 2>> $prefix.flt.vcf.log; rm -f $prefix.tmp.vcf.gz;\n";
+$cmd .= "($root/k8 $root/hapdip.js filter -q3 $prefix.tmp.vcf.gz | gzip -1 > $prefix.flt.vcf.gz) 2>> $prefix.flt.vcf.log; rm -f $prefix.tmp.vcf.gz;\n";
 $cmd .= "$root/htsbox abreak -cuf $ref $prefix.unsrt.sam.gz | gzip -1 > $prefix.sv.vcf.gz;\n";
 print $cmd;
 
