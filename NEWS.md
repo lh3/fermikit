@@ -1,5 +1,9 @@
 * 0.13
   - updated trimadap to r9 for trimming (not only masking)
+  - updated hapdip to r36 for minor bug fixes
+  - updated htsbox to r130 for a few minor changes
+  - dropped samtools dependency for BAM sorting (now by htsbox)
+  - added test script (by Mike Lin)
 * 0.12
   - updated htsbox to r302 for SV calling
   - updated hapdip to r19 for multi-sample filtering.
