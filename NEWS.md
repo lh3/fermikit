@@ -1,3 +1,5 @@
+* 0.13
+  - updated trimadap to r9 for trimming (not only masking)
 * 0.12
   - updated htsbox to r302 for SV calling
   - updated hapdip to r19 for multi-sample filtering.
