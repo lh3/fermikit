@@ -1,3 +1,11 @@
+* 0.14 (not released yet)
+  - updated fermi2 to r193 for a fix of open end trimming
+  - updated bwa to r1142 (post 0.7.15)
+  - updated trimadap for one additional 3'-end PE adapter
+  - updated hapdip to r56 for better filtering in the fermikit mode
+  - updated htsbox to r327 (forgot if it has any effect on fermikit)
+  - updated k8 to 0.2.2 as is required by more recent hapdip
+  - the assembly components should almost the same as v0.13, except the fermi2 bugfix for good
 * 0.13
   - updated trimadap to r9 for trimming (not only masking)
   - updated hapdip to r36 for minor bug fixes

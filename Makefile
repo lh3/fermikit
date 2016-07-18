@@ -51,7 +51,7 @@ fermi.kit/hapdip.js:fermi.kit
 fermi.kit/run-calling:run-calling
 	cp $< $@
 
-fermi.kit/k8:k8-0.2.1.tar.bz2 fermi.kit
+fermi.kit/k8:k8-0.2.2.tar.bz2 fermi.kit
 	(cd fermi.kit; tar -jxf ../$< k8-`uname -s|tr [A-Z] [a-z]` && mv k8-`uname -s|tr [A-Z] [a-z]` k8)
 
 test: all
