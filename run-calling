@@ -5,13 +5,14 @@ use warnings;
 use Getopt::Std;
 
 my %opts = (t=>4);
-getopts("t:b:o:", \%opts);
+getopts("t:b:o:m", \%opts);
 
 die('Usage: run-calling [options] <indexed-ref> <unitigs.mag.gz>
 Options:
   -o STR    prefix of output files [inferred from input]
   -b STR    prefix for BWA index [same as <indexed-ref>]
   -t INT    number of threads [4]
+  -m        use minimap2
 ') if @ARGV < 2;
 
 # check path
@@ -31,8 +32,10 @@ die("ERROR: can't find the reference sequences\n") unless defined($ref);
 
 # check BWA index
 my $idx = defined($opts{b})? $opts{b} : $ARGV[0];
-die("ERROR: failed to locate the BWA index. Please run '$root/bwa index -p $idx ref.fa'.\n")
-  unless (-f "$idx.bwt" && -f "$idx.pac" && -f "$idx.sa" && -f "$idx.ann" && -f "$idx.amb");
+unless (defined $opts{m}) {
+	die("ERROR: failed to locate the BWA index. Please run '$root/bwa index -p $idx ref.fa'.\n")
+	  unless (-f "$idx.bwt" && -f "$idx.pac" && -f "$idx.sa" && -f "$idx.ann" && -f "$idx.amb");
+}
 
 # infer prefix
 my $prefix;
@@ -46,7 +49,11 @@ die("ERROR: failed to identify the prefix for output. Please specify -o.\n") unl
 
 # construct command lines
 my $cmd = '';
-$cmd .= "[ ! -f $prefix.unsrt.sam.gz ] && $root/bwa mem -t$opts{t} -x intractg $idx $ARGV[1] 2> $prefix.unsrt.sam.log | gzip -1 > $prefix.unsrt.sam.gz;\n";
+if (defined $opts{m}) {
+	$cmd .= "[ ! -f $prefix.unsrt.sam.gz ] && $root/minimap2 -ax asm10 -k23 -w11 -f1000 -n2 -s100 --end-bonus 5 -t$opts{t} $idx $ARGV[1] 2> $prefix.unsrt.sam.log | gzip -1 > $prefix.unsrt.sam.gz;\n";
+} else {
+	$cmd .= "[ ! -f $prefix.unsrt.sam.gz ] && $root/bwa mem -t$opts{t} -x intractg $idx $ARGV[1] 2> $prefix.unsrt.sam.log | gzip -1 > $prefix.unsrt.sam.gz;\n";
+}
 $cmd .= "[ ! -f $prefix.srt.bam ] && $root/htsbox samsort -S $prefix.unsrt.sam.gz > $prefix.srt.bam;\n";
 $cmd .= "$root/htsbox pileup -cuf $ref $prefix.srt.bam | gzip -1 > $prefix.raw.vcf.gz;\n";
 $cmd .= "($root/k8 $root/hapdip.js deovlp $prefix.raw.vcf.gz | $root/k8 $root/hapdip.js anno | gzip -1 > $prefix.tmp.vcf.gz) 2> $prefix.flt.vcf.log;\n";
